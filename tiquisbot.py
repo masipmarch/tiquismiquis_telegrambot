@@ -23,6 +23,16 @@ logger = logging.getLogger(__name__)
 # Define a few command handlers. These usually take the two arguments bot and
 # update. Error handlers also receive the raised TelegramError object in error.
 
+def hola(update, context):
+    """Send a message when the command /start is issued."""
+    #update.message.reply_text('Hi!')
+    bot_welcome = """Hola, {} sóc en <b> Tiquismiquis Bot</b>,
+    I em faré càrrec de traduïr els missatges que interpreto d'aquest grup.
+    """.format(update.message.from_user.first_name)
+    xatid = update.message.chat.id
+    context.bot.send_message(chat_id=xatid,text=bot_welcome,parse_mode='html')
+    #update.message.reply_html(bot_welcome)
+
 def start(update, context):
     """Send a message when the command /start is issued."""
     #update.message.reply_text('Hi!')
@@ -61,7 +71,11 @@ def help(update, context):
 
 def echo(update, context):
     """Echo the user message."""
-    update.message.reply_text(update.message.chat.first_name + " : ... " + re.sub("[aeiouAEIOUàáèéìíòóùúïäëöü]", "i", update.message.text) + " ... ")
+    if update.message.chat.type == "group":
+        update.message.reply_text(str(update.message.from_user.first_name) + " : ... " + re.sub("[aeiouAEIOUàáèéìíòóùúïäëöü]", "i", update.message.text) + " ... ")
+    else:
+        update.message.reply_text(str(update.message.chat.first_name) + " : ... " + re.sub("[aeiouAEIOUàáèéìíòóùúïäëöü]", "i", update.message.text) + " ... ")
+    #update.message.reply_text(str(update.message.chat.first_name) + " : ... " + str(update.message.text) + " ... ")
 
 
 def error(update, context):
@@ -123,10 +137,11 @@ def main():
         update.message.reply_text(' El nom del grup és: ' + update.message.chat.title)
 
     # on different commands - answer in Telegram
-    dp.add_handler(CommandHandler("start", start))
-    dp.add_handler(CommandHandler("help", help))
+    dp.add_handler(CommandHandler("hola", hola))
+    #dp.add_handler(CommandHandler("start", start))
+    #dp.add_handler(CommandHandler("help", help))
     dp.add_handler(CommandHandler("echo", echo))
-    dp.add_handler(CommandHandler("options", options))
+    #dp.add_handler(CommandHandler("options", options))
     dp.add_handler(CommandHandler("myid", myid))
     dp.add_handler(CommandHandler("chatid", chatid))
     dp.add_handler(CommandHandler("envia_msg", envia_msg))
