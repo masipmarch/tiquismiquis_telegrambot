@@ -12,6 +12,7 @@ from datetime import datetime
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackQueryHandler
 import logging
+import config
 
 
 # Enable logging
@@ -77,6 +78,14 @@ def echo(update, context):
         update.message.reply_text(str(update.message.chat.first_name) + " : ... " + re.sub("[aeiouAEIOUàáèéìíòóùúïäëöü]", "i", update.message.text) + " ... ")
     #update.message.reply_text(str(update.message.chat.first_name) + " : ... " + str(update.message.text) + " ... ")
 
+def tradueix(update, context):
+    """Echo the user message."""
+    if update.message.chat.type == "group":
+        update.message.reply_text(str(update.message.from_user.first_name) + " : ... " + re.sub("[aeiouAEIOUàáèéìíòóùúïäëöü]", "i", update.message.text.split("tradueix",1)[1] ) + " ... ")
+    else:
+        update.message.reply_text(str(update.message.chat.first_name) + " : ... " + re.sub("[aeiouAEIOUàáèéìíòóùúïäëöü]", "i", update.message.text) + " ... ")
+    #update.message.reply_text(str(update.message.chat.first_name) + " : ... " + str(update.message.text) + " ... ")
+
 
 def error(update, context):
     """Log Errors caused by Updates."""
@@ -103,7 +112,7 @@ def sum(update, context):
 
 #Variables para el Token y la URL del chatbot
 
-TOKEN = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"   #Aquí va el token del bot creat
+TOKEN = config.token   #Aquí va el token del bot creat
 URL = "https://api.telegram.org/bot" + TOKEN + "/"
 
 def main():
@@ -138,6 +147,7 @@ def main():
 
     # on different commands - answer in Telegram
     dp.add_handler(CommandHandler("hola", hola))
+    dp.add_handler(CommandHandler("tradueix", tradueix))
     #dp.add_handler(CommandHandler("start", start))
     #dp.add_handler(CommandHandler("help", help))
     dp.add_handler(CommandHandler("echo", echo))
@@ -147,7 +157,7 @@ def main():
     dp.add_handler(CommandHandler("envia_msg", envia_msg))
     dp.add_handler(CommandHandler("sum", sum))
     dp.add_handler(CallbackQueryHandler(button))
-    dp.add_handler(CommandHandler('r', restart, filters=Filters.user(username='@usuari')))
+    dp.add_handler(CommandHandler('r', restart, filters=Filters.user(username=config.username)))
 
     # on noncommand i.e message - echo the message on Telegram
     dp.add_handler(MessageHandler(Filters.text, echo))
